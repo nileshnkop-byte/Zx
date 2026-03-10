@@ -233,4 +233,794 @@ footer strong{color:var(--amber)}
 /* FOOD MANAGER */
 .menu-item-row{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-size:0.82rem}
 .menu-item-row .item-emoji{font-size:1.4rem;flex-shrink:0}
-.menu-item-row .ite
+.menu-item-row .item-info{flex:1;min-width:0}
+.menu-item-row .item-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.menu-item-row .item-meta{color:var(--muted);font-size:0.74rem}
+.menu-item-row .item-price-input{width:68px;padding:4px 8px;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:7px;font-size:0.82rem;color:var(--text);outline:none;font-family:'DM Sans',sans-serif;text-align:center;font-weight:700}
+.menu-item-row .item-price-input:focus{border-color:var(--orange)}
+.item-avail-btn{padding:4px 10px;border-radius:7px;font-size:0.72rem;font-weight:700;cursor:pointer;border:1.5px solid;transition:all 0.2s;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.item-avail-btn.on{border-color:#16a34a;color:#16a34a;background:rgba(22,163,74,0.08)}
+.item-avail-btn.off{border-color:#dc2626;color:#dc2626;background:rgba(220,38,38,0.08)}
+.item-del-btn{padding:4px 8px;border-radius:7px;font-size:0.8rem;cursor:pointer;border:1.5px solid var(--border);color:var(--muted);background:transparent;transition:all 0.2s}
+.item-del-btn:hover{border-color:#dc2626;color:#dc2626}
+.cat-chip{display:flex;align-items:center;gap:5px;background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:0.78rem;font-weight:600;color:var(--muted)}
+.cat-chip .del-cat{cursor:pointer;color:var(--muted);font-size:0.8rem;margin-left:2px}
+.cat-chip .del-cat:hover{color:#dc2626}
+
+/* PINCODE RESULT */
+.pin-result-box{padding:12px 16px;border-radius:12px;font-size:0.88rem;font-weight:600;display:flex;align-items:center;gap:10px;animation:popIn 0.3s ease}
+.pin-result-box.success{background:rgba(22,163,74,0.12);border:1.5px solid rgba(22,163,74,0.3);color:#16a34a}
+.pin-result-box.error{background:rgba(220,38,38,0.1);border:1.5px solid rgba(220,38,38,0.25);color:#dc2626}
+.pin-area-name{font-size:0.82rem;font-weight:400;color:var(--muted);margin-left:4px}
+.pin-charge{font-size:0.78rem;padding:2px 10px;border-radius:10px;background:rgba(22,163,74,0.15);color:#16a34a;font-weight:700;margin-left:auto}
+
+/* ADMIN PINCODE TAB */
+.pincode-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.pincode-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:0.85rem}
+.pincode-item .pin-num{font-weight:700;font-family:monospace;color:var(--orange)}
+.pincode-item .pin-name{color:var(--muted);font-size:0.8rem}
+.pin-toggle{background:transparent;border:1.5px solid var(--border);border-radius:7px;padding:4px 12px;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;color:var(--muted)}
+.pin-toggle.on{border-color:#16a34a;color:#16a34a}
+.pin-toggle.off{border-color:#dc2626;color:#dc2626}
+.add-pin-row{display:flex;gap:8px;margin-top:12px}
+.add-pin-row input{flex:1;padding:9px 12px;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:8px;font-size:0.85rem;color:var(--text);outline:none;font-family:'DM Sans',sans-serif}
+.add-pin-row input:focus{border-color:var(--orange)}
+.add-pin-btn{background:var(--orange);color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif}
+
+@media(max-width:600px){
+  nav{padding:0 14px}
+  .hero{padding:36px 16px 60px}
+  .search-bar,.coupon-banner,.main{padding-left:16px;padding-right:16px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">☕ Chai Sutta Bar</div>
+  <div class="nav-right">
+    <button class="dark-toggle" onclick="toggleDark()" id="darkBtn">🌙 Dark</button>
+    <div id="userChip" style="display:none" class="user-chip">
+      <div class="user-avatar" id="userInitial">U</div>
+      <span id="userName">User</span>
+    </div>
+    <button class="nav-btn" id="loginNavBtn" onclick="openModal('loginModal')">Login</button>
+    <button class="nav-btn orange" onclick="openModal('adminModal')">⚙️ Admin</button>
+    <button class="cart-btn" onclick="toggleCart()">🛒 <span class="cart-count" id="cartCount">0</span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">🔥 India's #1 Chai Brand</div>
+    <h1>Har Ghut Mein<br/><span>Asli Maza!</span></h1>
+    <p>Garam chai, kulhad mein — seedha aapke darwaze tak. Fresh, fast aur desi andaaz mein.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.querySelector('.main').scrollIntoView({behavior:'smooth'})">Order Karo Abhi 🚀</button>
+      <button class="btn-outline" onclick="openModal('trackingModal')">📍 Track Order</button>
+    </div>
+    <div class="badges">
+      <div class="badge">⭐ <strong>4.8</strong> Rating</div>
+      <div class="badge">⚡ <strong>25 min</strong> Delivery</div>
+      <div class="badge">📍 <strong>Khunti</strong> District</div>
+      <div class="badge">🛵 Delivery <strong>₹20–₹50</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- PINCODE CHECKER -->
+<div class="search-bar">
+  <div class="search-inner">
+    <span>📍</span>
+    <input type="number" id="pincodeInput" placeholder="Apna Khunti pincode daalo (e.g. 835210)..." maxlength="6" oninput="if(this.value.length>6)this.value=this.value.slice(0,6)"/>
+    <button class="search-btn" onclick="checkPincode()">Check Delivery 🛵</button>
+  </div>
+  <div id="pinResult" style="margin-top:10px;display:none"></div>
+</div>
+
+<!-- COUPON BANNER -->
+<div class="coupon-banner">
+  <div class="coupon-inner">
+    <span>🏷️</span>
+    <div class="coupon-text">
+      <strong>Aaj ka special offer! Pehle order par 20% off</strong>
+      <small>Code use karo aur maza lo — limited time only!</small>
+    </div>
+    <div class="coupon-code" onclick="copyCoupon('CHAI20')">CHAI20 📋</div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <h2 class="section-title">Kya Chahiye Aapko?</h2>
+  <div class="categories">
+    <button class="cat-btn active" onclick="filterCat(this,'all')">☕ Sab Kuch</button>
+    <button class="cat-btn" onclick="filterCat(this,'chai')">🍵 Chai</button>
+    <button class="cat-btn" onclick="filterCat(this,'snacks')">🍟 Snacks</button>
+    <button class="cat-btn" onclick="filterCat(this,'maggi')">🍜 Maggi</button>
+    <button class="cat-btn" onclick="filterCat(this,'cold')">🥤 Cold Drinks</button>
+    <button class="cat-btn" onclick="filterCat(this,'sweet')">🍮 Mithai</button>
+  </div>
+
+  <div class="menu-grid" id="menuGrid"></div>
+
+  <!-- REVIEWS -->
+  <div class="reviews-section">
+    <h2 class="section-title">Customers Kya Bol Rahe Hain 💬</h2>
+    <button class="add-review-btn" onclick="openModal('reviewModal')">+ Apna Review Do</button>
+    <div class="reviews-grid" id="reviewsGrid"></div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>Made with ❤️ &amp; <strong>Chai</strong> | Chai Sutta Bar © 2025 | <a href="#" style="color:var(--amber)">Privacy Policy</a></footer>
+
+<!-- WHATSAPP FLOAT -->
+<a class="wa-float" id="waFloat" href="#" onclick="whatsappOrder(event)" title="WhatsApp par order karo">💬</a>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ====== CART DRAWER ====== -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h3>🛒 Aapka Cart</h3>
+    <button class="close-btn" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty"><div class="empty-icon">☕</div><p>Cart khali hai!<br/>Kuch add karo yaar</p></div>
+  </div>
+  <div class="coupon-input-row">
+    <input type="text" id="couponInput" placeholder="Coupon code (e.g. CHAI20)"/>
+    <button class="apply-btn" onclick="applyCoupon()">Apply</button>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-totals">
+      <div class="total-row"><span>Subtotal</span><span id="subtotalVal">₹0</span></div>
+      <div class="total-row discount-row" id="discountRow" style="display:none"><span>Discount 🎉</span><span id="discountVal"></span></div>
+      <div class="total-row"><span>Delivery</span><span id="deliveryVal">₹30</span></div>
+      <div class="total-row grand"><span>Total</span><span id="cartTotal">₹0</span></div>
+    </div>
+    <button class="checkout-btn" onclick="checkout()">Pay via Razorpay 💳</button>
+  </div>
+</div>
+
+<!-- ====== LOGIN MODAL ====== -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="close-modal" onclick="closeModal('loginModal')">✕</button>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(this,'loginForm')">Login</div>
+      <div class="tab" onclick="switchTab(this,'signupForm')">Sign Up</div>
+    </div>
+    <div id="loginForm">
+      <h2>Wapas aao! ☕</h2>
+      <p>Login karo aur apna chai order karo</p>
+      <div class="form-group"><label>Email / Phone</label><input type="text" id="loginEmail" placeholder="email@example.com"/></div>
+      <div class="form-group"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••"/></div>
+      <button class="form-btn" onclick="doLogin()">Login Karo</button>
+    </div>
+    <div id="signupForm" style="display:none">
+      <h2>Nayi shuruwat! 🎉</h2>
+      <p>Account banao aur exclusive offers pao</p>
+      <div class="form-group"><label>Poora Naam</label><input type="text" id="signupName" placeholder="Aapka naam"/></div>
+      <div class="form-group"><label>Email</label><input type="text" id="signupEmail" placeholder="email@example.com"/></div>
+      <div class="form-group"><label>Phone</label><input type="tel" id="signupPhone" placeholder="+91 98765 43210"/></div>
+      <div class="form-group"><label>Password</label><input type="password" id="signupPass" placeholder="••••••••"/></div>
+      <button class="form-btn" onclick="doSignup()">Account Banao</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== REVIEW MODAL ====== -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal">
+    <button class="close-modal" onclick="closeModal('reviewModal')">✕</button>
+    <h2>Apna Review Do ⭐</h2>
+    <p>Aapka feedback hamare liye bahut zaruri hai!</p>
+    <div class="form-group"><label>Aapka Naam</label><input type="text" id="rvName" placeholder="Naam likhoo..."/></div>
+    <div class="form-group">
+      <label>Rating</label>
+      <div id="starPicker" style="font-size:1.8rem;cursor:pointer;margin-top:4px">
+        <span onclick="setRating(1)">☆</span><span onclick="setRating(2)">☆</span><span onclick="setRating(3)">☆</span><span onclick="setRating(4)">☆</span><span onclick="setRating(5)">☆</span>
+      </div>
+    </div>
+    <div class="form-group"><label>Review</label><input type="text" id="rvText" placeholder="Chai kaisi lagi? Batao..."/></div>
+    <button class="form-btn" onclick="submitReview()">Review Submit Karo</button>
+  </div>
+</div>
+
+<!-- ====== TRACKING MODAL ====== -->
+<div class="modal-overlay tracking-modal" id="trackingModal">
+  <div class="modal">
+    <button class="close-modal" onclick="closeModal('trackingModal')">✕</button>
+    <div class="track-header">
+      <div class="track-id">Order #CSB240309</div>
+      <div class="track-status">🔥 Aapki chai ban rahi hai!</div>
+    </div>
+    <div class="track-steps">
+      <div class="track-step">
+        <div class="step-dot done">✓</div>
+        <div class="step-info"><strong>Order Confirm ✅</strong><span>2:30 PM — Payment successful</span></div>
+      </div>
+      <div class="track-step">
+        <div class="step-dot done">✓</div>
+        <div class="step-info"><strong>Kitchen mein gaya 👨‍🍳</strong><span>2:32 PM — Preparation shuru</span></div>
+      </div>
+      <div class="track-step">
+        <div class="step-dot active">●</div>
+        <div class="step-info"><strong>Ban raha hai 🔥</strong><span>Estimated: 10 min aur</span></div>
+      </div>
+      <div class="track-step">
+        <div class="step-dot">4</div>
+        <div class="step-info"><strong>Delivery boy ke paas</strong><span>Abhi pending</span></div>
+      </div>
+      <div class="track-step">
+        <div class="step-dot">5</div>
+        <div class="step-info"><strong>Aapke darwaze par 🏠</strong><span>Abhi pending</span></div>
+      </div>
+    </div>
+    <div class="map-placeholder">
+      <div class="map-content">
+        <div class="map-pin">📍</div>
+        <div class="eta-badge">🛵 ~15 min door hai delivery boy</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== ADMIN MODAL ====== -->
+<div class="modal-overlay admin-modal" id="adminModal">
+  <div class="modal">
+    <button class="close-modal" onclick="closeModal('adminModal')">✕</button>
+    <h2>⚙️ Admin Dashboard</h2>
+    <p>Aaj ke orders aur stats dekho</p>
+    <div class="admin-tabs">
+      <div class="admin-tab active" onclick="adminTab(this,'stats')">📊 Stats</div>
+      <div class="admin-tab" onclick="adminTab(this,'orders')">📋 Orders</div>
+      <div class="admin-tab" onclick="adminTab(this,'food')">🍽️ Food</div>
+      <div class="admin-tab" onclick="adminTab(this,'pincodes')">📍 Pincodes</div>
+    </div>
+    <div id="adminStats">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-num">47</div><div class="stat-label">Aaj ke orders</div></div>
+        <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-num">₹8,240</div><div class="stat-label">Aaj ki kamai</div></div>
+        <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-num">4.8</div><div class="stat-label">Avg rating</div></div>
+        <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-num">312</div><div class="stat-label">Total customers</div></div>
+      </div>
+    </div>
+    <div id="adminOrders" style="display:none">
+      <table class="orders-table">
+        <thead><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>#CSB001</td><td>Rahul S.</td><td>₹145</td><td><span class="status-pill preparing">Preparing</span></td></tr>
+          <tr><td>#CSB002</td><td>Priya M.</td><td>₹230</td><td><span class="status-pill delivered">Delivered</span></td></tr>
+          <tr><td>#CSB003</td><td>Amit K.</td><td>₹95</td><td><span class="status-pill pending">Pending</span></td></tr>
+          <tr><td>#CSB004</td><td>Sneha R.</td><td>₹180</td><td><span class="status-pill preparing">Preparing</span></td></tr>
+          <tr><td>#CSB005</td><td>Vikram P.</td><td>₹320</td><td><span class="status-pill delivered">Delivered</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="adminFood" style="display:none">
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:12px">🍽️ Menu items add/edit/band karo — changes turant website par dikhenge</p>
+
+      <!-- Category Manager -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:0.82rem;font-weight:700;margin-bottom:8px;color:var(--text)">📂 Categories</div>
+        <div id="catList" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px"></div>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="newCatName" placeholder="Category naam (e.g. Sandwich)" style="flex:1;padding:8px 12px;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:8px;font-size:0.83rem;color:var(--text);outline:none;font-family:'DM Sans',sans-serif"/>
+          <input type="text" id="newCatEmoji" placeholder="Emoji" style="width:70px;padding:8px;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:8px;font-size:0.83rem;color:var(--text);outline:none;font-family:'DM Sans',sans-serif;text-align:center"/>
+          <button class="add-pin-btn" onclick="addCategory()">+ Add</button>
+        </div>
+      </div>
+
+      <!-- Add New Item -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px">
+        <div style="font-size:0.82rem;font-weight:700;margin-bottom:10px;color:var(--text)">➕ Naya Item Add Karo</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <input type="text" id="newItemName" placeholder="Item naam *" style="padding:9px 12px;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:8px;font-size:0.83rem;color:var(--text);outline:none;font-family:'DM Sans',sans-serif"/>
+          <input type="number" id="newItemPrice" placeholder="Price ₹ *" style="padding:9px 12px;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:8px;font-size:0.83rem;color:var(--text);outline:none;font-family:'DM Sans',sans-serif"/>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <input type="text" id="newItemDesc" placeholder="Description" style="padding:9px 12px;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:8px;font-size:0.83rem;color:var(--text);outline:none;font-family:'DM Sans',sans-serif"/>
+          <input type="text" id="newItemEmoji" placeholder="Emoji (e.g. 🍕)" style="padding:9px 12px;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:8px;font-size:0.83rem;color:var(--text);outline:none;font-family:'DM Sans',sans-serif;text-align:center"/>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+          <select id="newItemCat" style="padding:9px 12px;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:8px;font-size:0.83rem;color:var(--text);outline:none;font-family:'DM Sans',sans-serif"></select>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.83rem;cursor:pointer;padding:9px 12px;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:8px">
+            <input type="checkbox" id="newItemBest"/> 🔥 Bestseller mark karo
+          </label>
+        </div>
+        <button class="add-pin-btn" style="width:100%;padding:11px" onclick="addMenuItem()">+ Menu Mein Add Karo</button>
+      </div>
+
+      <!-- Existing Items List -->
+      <div style="font-size:0.82rem;font-weight:700;margin-bottom:8px;color:var(--text)">📋 Sabhi Items (<span id="itemCount">0</span>)</div>
+      <div id="adminMenuList" style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto"></div>
+    </div>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:12px">✏️ Yahan se Indore ke delivery pincodes ON/OFF karo ya naye add karo</p>
+      <div class="pincode-list" id="adminPincodeList"></div>
+      <div class="add-pin-row">
+        <input type="number" id="newPinCode" placeholder="Pincode (6 digit)" maxlength="6"/>
+        <input type="text" id="newPinArea" placeholder="Area naam (e.g. Vijay Nagar)" style="flex:1.5"/>
+        <input type="number" id="newPinCharge" placeholder="Charge ₹" style="flex:0.6"/>
+        <button class="add-pin-btn" onclick="addPincode()">+ Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>// ===== DATA =====
+const menu = [
+  {id:1,name:'Kulhad Chai',desc:'Mitti ki khushbu ke saath asli masala chai',price:30,emoji:'🍵',cat:'chai',bg:'#fef3c7',stars:4.9,reviews:2340,best:true},
+  {id:2,name:'Adrak Chai',desc:'Taza adrak ka tikha swaad, bilkul ghar jaisa',price:35,emoji:'☕',cat:'chai',bg:'#fde68a',stars:4.7,reviews:1820},
+  {id:3,name:'Masala Chai',desc:'9 masalon ka jadu ek cup mein',price:40,emoji:'🫖',cat:'chai',bg:'#fed7aa',stars:4.8,reviews:3100,best:true},
+  {id:4,name:'Green Tea',desc:'Healthy aur refreshing herbal blend',price:45,emoji:'🍃',cat:'chai',bg:'#d1fae5',stars:4.5,reviews:890},
+  {id:5,name:'Maggi Classic',desc:'2 minute mein taiyaar, dil ka pyaara',price:60,emoji:'🍜',cat:'maggi',bg:'#fef3c7',stars:4.8,reviews:4200,best:true},
+  {id:6,name:'Pav Bhaji',desc:'Butter se bharpoor, Mumbai-style masaledar',price:90,emoji:'🍛',cat:'snacks',bg:'#ffedd5',stars:4.6,reviews:1560},
+  {id:7,name:'Bread Pakoda',desc:'Crispy bahar se, naram andar se',price:50,emoji:'🥪',cat:'snacks',bg:'#fef9c3',stars:4.4,reviews:780},
+  {id:8,name:'Aloo Tikki',desc:'Khasta tikki, pudine ki chutney ke saath',price:55,emoji:'🥔',cat:'snacks',bg:'#fef3c7',stars:4.7,reviews:1200},
+  {id:9,name:'Cold Coffee',desc:'Thick, creamy aur perfectly chilled',price:80,emoji:'🥤',cat:'cold',bg:'#e0e7ff',stars:4.6,reviews:2100},
+  {id:10,name:'Mango Lassi',desc:'Aamras aur dahi ka mast combo',price:70,emoji:'🥭',cat:'cold',bg:'#fef3c7',stars:4.9,reviews:3400,best:true},
+  {id:11,name:'Gulab Jamun',desc:'Soft, juicy aur ras mein dooba',price:40,emoji:'🍮',cat:'sweet',bg:'#fce7f3',stars:4.8,reviews:1900},
+  {id:12,name:'Jalebi',desc:'Crispy bahar mein, meethi andar se',price:35,emoji:'🌀',cat:'sweet',bg:'#fef9c3',stars:4.7,reviews:2200},
+];
+
+let reviews = [
+  {name:'Rahul S.',text:'Yaar, is chai ka koi jawab nahi! Kulhad mein aati hai toh feeling hi alag hoti hai.',stars:5,date:'2 din pehle'},
+  {name:'Priya M.',text:'Maggi + Chai combo best hai! Barish mein toh aur bhi maza aata hai 😍',stars:5,date:'5 din pehle'},
+  {name:'Amit K.',text:'Fast delivery, hot chai. Exactly what I needed after office. Will order again!',stars:4,date:'1 hafte pehle'},
+];
+
+let cart = {};
+let discount = 0;
+let currentRating = 0;
+let loggedIn = false;
+let activecat = 'all';
+
+// ===== PINCODE DATA — Khunti District, Jharkhand =====
+// Distance ke hisaab se charge: Paas = ₹20, Thoda door = ₹30, Zyada door = ₹50
+// 👇 YE LIST ADMIN PANEL SE EDIT HOTI HAI — ya seedha yahan bhi likh sakte ho
+let pincodes = [
+  // --- Khunti Town (HQ) — Sabse paas ₹20 ---
+  {code:'835210', area:'Khunti Town (Sadar)',           charge:20, active:true},
+  {code:'835211', area:'Khunti Main Market',            charge:20, active:true},
+  {code:'835212', area:'Khunti Nagar Panchayat',        charge:20, active:true},
+
+  // --- Nearby Blocks ~15-25km — ₹30 ---
+  {code:'835213', area:'Murhu Block',                   charge:30, active:true},
+  {code:'835214', area:'Karra Block',                   charge:30, active:true},
+  {code:'835215', area:'Arki Block',                    charge:30, active:true},
+  {code:'835216', area:'Rania Block',                   charge:30, active:true},
+  {code:'835217', area:'Torpa Block',                   charge:30, active:true},
+
+  // --- Dur ke Areas ~30-50km — ₹50 ---
+  {code:'835218', area:'Adki Block',                    charge:50, active:true},
+  {code:'835219', area:'Tamar (Border Area)',            charge:50, active:true},
+  {code:'835220', area:'Silli (Ranchi Border)',          charge:50, active:false},
+  {code:'835221', area:'Bundu Area',                    charge:50, active:false},
+];
+
+// ===== PINCODE CHECK (Customer ke liye) =====
+function checkPincode(){
+  const val = document.getElementById('pincodeInput').value.trim();
+  const box = document.getElementById('pinResult');
+  box.style.display='block';
+  if(val.length !== 6){
+    box.innerHTML=`<div class="pin-result-box error">⚠️ Sahi 6-digit pincode daalo</div>`;
+    return;
+  }
+  const found = pincodes.find(p=>p.code===val);
+  if(!found){
+    box.innerHTML=`<div class="pin-result-box error">❌ Pincode <strong>${val}</strong> Khunti district mein nahi hai. Sirf Khunti, Jharkhand ke pincodes valid hain.</div>`;
+  } else if(!found.active){
+    box.innerHTML=`<div class="pin-result-box error">⏸️ <strong>${found.area}</strong> — Is area mein abhi delivery available nahi. Jaldi shuru hogi!</div>`;
+  } else {
+    const chargeText = found.charge===20 ? '🟢 ₹20 — Paas area' : found.charge===30 ? '🟡 ₹30 — Thoda door' : '🔴 ₹50 — Dur ka area';
+    box.innerHTML=`<div class="pin-result-box success">✅ <span><strong>${found.area}</strong><span class="pin-area-name">(${found.code})</span> — Delivery available!</span><span class="pin-charge">${chargeText}</span></div>`;
+  }
+}
+
+// Enter press on pincode input
+const pinEl = document.getElementById('pincodeInput');
+if(pinEl) pinEl.addEventListener('keydown', e=>{
+  if(e.key==='Enter') checkPincode();
+});
+
+// ===== ADMIN PINCODES RENDER =====
+function renderAdminPincodes(){
+  document.getElementById('adminPincodeList').innerHTML = pincodes.map((p,i)=>`
+    <div class="pincode-item">
+      <span class="pin-num">${p.code}</span>
+      <span class="pin-name">${p.area}</span>
+      <span style="font-size:0.78rem;color:var(--muted)">₹${p.charge}</span>
+      <button class="pin-toggle ${p.active?'on':'off'}" onclick="togglePin(${i})">${p.active?'✅ ON':'❌ OFF'}</button>
+    </div>`).join('');
+}
+function togglePin(i){
+  pincodes[i].active=!pincodes[i].active;
+  renderAdminPincodes();
+  showToast(`📍 ${pincodes[i].code} — ${pincodes[i].active?'ON ✅':'OFF ❌'} kar diya`);
+}
+function addPincode(){
+  const code=document.getElementById('newPinCode').value.trim();
+  const area=document.getElementById('newPinArea').value.trim();
+  const charge=parseInt(document.getElementById('newPinCharge').value)||0;
+  if(code.length!==6||!area){showToast('❌ Pincode (6 digit) aur area naam dono bharo');return;}
+  if(pincodes.find(p=>p.code===code)){showToast('❌ Ye pincode pehle se hai!');return;}
+  pincodes.push({code,area,charge,active:true});
+  renderAdminPincodes();
+  document.getElementById('newPinCode').value='';
+  document.getElementById('newPinArea').value='';
+  document.getElementById('newPinCharge').value='';
+  showToast(`✅ Pincode ${code} (${area}) add ho gaya!`);
+}
+
+// ===== RENDER MENU =====
+function renderMenu(items){
+  document.getElementById('menuGrid').innerHTML = items.map(i=>`
+    <div class="menu-card">
+      <div class="card-img" style="background:${i.bg}">
+        ${i.emoji}
+        <div class="veg-badge"><div class="veg-dot"></div></div>
+        ${i.best?'<div class="bestseller">🔥 Bestseller</div>':''}
+      </div>
+      <div class="card-body">
+        <div class="stars">${'★'.repeat(Math.floor(i.stars))}${'☆'.repeat(5-Math.floor(i.stars))} <span>(${(i.reviews/1000).toFixed(1)}k)</span></div>
+        <div class="card-name">${i.name}</div>
+        <div class="card-desc">${i.desc}</div>
+        <div class="card-footer">
+          <div class="price">₹${i.price}</div>
+          <button class="add-btn ${cart[i.id]?'added':''}" id="btn-${i.id}" onclick="addToCart(${i.id})">
+            ${cart[i.id]?'✓ Added':'+ Add'}
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterCat(btn,cat){
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); activecat=cat;
+  const filtered=(cat==='all'?menuItems:menuItems.filter(i=>i.cat===cat)).filter(i=>i.available!==false);
+  renderMenu(filtered);
+}
+
+// ===== CART =====
+function addToCart(id){
+  const item=menuItems.find(i=>i.id===id);
+  if(cart[id]) cart[id].qty++;
+  else cart[id]={...item,qty:1};
+  updateCartUI();
+  showToast(`✅ ${item.name} cart mein add!`);
+  const btn=document.getElementById('btn-'+id);
+  if(btn){btn.textContent='✓ Added';btn.classList.add('added');}
+}
+
+function changeQty(id,delta){
+  if(!cart[id]) return;
+  cart[id].qty+=delta;
+  if(cart[id].qty<=0) delete cart[id];
+  updateCartUI();
+  renderMenu(activecat==='all'?menu:menu.filter(i=>i.cat===activecat));
+}
+
+function updateCartUI(){
+  const items=Object.values(cart);
+  const count=items.reduce((s,i)=>s+i.qty,0);
+  const subtotal=items.reduce((s,i)=>s+i.price*i.qty,0);
+  const delivery=subtotal>=199?0:30;
+  const total=subtotal-discount+delivery;
+  document.getElementById('cartCount').textContent=count;
+  const cartEl=document.getElementById('cartItems');
+  const footer=document.getElementById('cartFooter');
+  if(items.length===0){
+    cartEl.innerHTML='<div class="cart-empty"><div class="empty-icon">☕</div><p>Cart khali hai!<br/>Kuch add karo yaar</p></div>';
+    footer.style.display='none';
+  } else {
+    cartEl.innerHTML=items.map(i=>`
+      <div class="cart-item">
+        <div class="cart-item-emoji">${i.emoji}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${i.name}</div>
+          <div class="cart-item-price">₹${i.price*i.qty}</div>
+        </div>
+        <div class="qty-controls">
+          <button class="qty-btn" onclick="changeQty(${i.id},-1)">−</button>
+          <span class="qty-num">${i.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${i.id},1)">+</button>
+        </div>
+      </div>`).join('');
+    footer.style.display='block';
+    document.getElementById('subtotalVal').textContent='₹'+subtotal;
+    document.getElementById('deliveryVal').textContent=delivery===0?'🆓 Free':'₹'+delivery;
+    document.getElementById('cartTotal').textContent='₹'+total;
+    if(discount>0){
+      document.getElementById('discountRow').style.display='flex';
+      document.getElementById('discountVal').textContent='-₹'+discount;
+    } else {
+      document.getElementById('discountRow').style.display='none';
+    }
+  }
+}
+
+function toggleCart(){
+  document.getElementById('cartOverlay').classList.toggle('open');
+  document.getElementById('cartDrawer').classList.toggle('open');
+}
+
+// ===== COUPON =====
+const coupons={'CHAI20':20,'SUTTA10':10,'NEWUSER':15};
+function applyCoupon(){
+  const code=document.getElementById('couponInput').value.toUpperCase().trim();
+  if(coupons[code]){
+    const items=Object.values(cart);
+    const subtotal=items.reduce((s,i)=>s+i.price*i.qty,0);
+    discount=Math.floor(subtotal*coupons[code]/100);
+    updateCartUI();
+    showToast(`🎉 Coupon "${code}" apply! ₹${discount} discount mila!`);
+  } else {
+    showToast('❌ Invalid coupon code. Try: CHAI20, SUTTA10');
+  }
+}
+function copyCoupon(code){
+  navigator.clipboard?.writeText(code);
+  showToast(`📋 Coupon "${code}" copy ho gaya!`);
+}
+
+// ===== CHECKOUT =====
+function checkout(){
+  const items=Object.values(cart);
+  if(!items.length) return;
+  const subtotal=items.reduce((s,i)=>s+i.price*i.qty,0);
+  const delivery=subtotal>=199?0:30;
+  const total=subtotal-discount+delivery;
+  // Razorpay simulation
+  showToast(`💳 Razorpay payment window open ho rahi hai... ₹${total}`);
+  setTimeout(()=>{
+    cart={};discount=0;
+    updateCartUI();
+    toggleCart();
+    showToast('🎉 Order place ho gaya! 25 min mein chai aayegi!');
+    setTimeout(()=>openModal('trackingModal'),1500);
+  },2000);
+}
+
+// ===== AUTH =====
+function doLogin(){
+  const email=document.getElementById('loginEmail').value;
+  const pass=document.getElementById('loginPass').value;
+  if(!email||!pass){showToast('❌ Email aur password dono bharo');return;}
+  loggedIn=true;
+  const name=email.split('@')[0];
+  document.getElementById('userChip').style.display='flex';
+  document.getElementById('loginNavBtn').style.display='none';
+  document.getElementById('userName').textContent=name;
+  document.getElementById('userInitial').textContent=name[0].toUpperCase();
+  closeModal('loginModal');
+  showToast(`✅ Welcome back, ${name}! ☕`);
+}
+function doSignup(){
+  const name=document.getElementById('signupName').value;
+  const email=document.getElementById('signupEmail').value;
+  if(!name||!email){showToast('❌ Naam aur email dono bharo');return;}
+  loggedIn=true;
+  document.getElementById('userChip').style.display='flex';
+  document.getElementById('loginNavBtn').style.display='none';
+  document.getElementById('userName').textContent=name;
+  document.getElementById('userInitial').textContent=name[0].toUpperCase();
+  closeModal('loginModal');
+  showToast(`🎉 Welcome, ${name}! Chai time shuru! ☕`);
+}
+
+// ===== REVIEWS =====
+function renderReviews(){
+  document.getElementById('reviewsGrid').innerHTML=reviews.map(r=>`
+    <div class="review-card">
+      <div class="review-header">
+        <div class="reviewer-avatar">${r.name[0]}</div>
+        <div><div class="reviewer-name">${r.name}</div><div class="review-date">${r.date}</div></div>
+      </div>
+      <div class="review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
+      <div class="review-text">${r.text}</div>
+    </div>`).join('');
+}
+function setRating(n){
+  currentRating=n;
+  const stars=document.getElementById('starPicker').querySelectorAll('span');
+  stars.forEach((s,i)=>{s.textContent=i<n?'★':'☆';s.style.color=i<n?'#f48c06':'#ccc';});
+}
+function submitReview(){
+  const name=document.getElementById('rvName').value||'Anonymous';
+  const text=document.getElementById('rvText').value;
+  if(!text){showToast('❌ Review likhna zaruri hai!');return;}
+  reviews.unshift({name,text,stars:currentRating||5,date:'Abhi'});
+  renderReviews();
+  closeModal('reviewModal');
+  showToast('✅ Review submit ho gaya! Shukriya! 🙏');
+}
+
+// ===== ADMIN TABS =====
+function adminTab(btn,panel){
+  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  ['stats','orders','food','pincodes'].forEach(p=>{
+    const el=document.getElementById('admin'+p.charAt(0).toUpperCase()+p.slice(1));
+    if(el) el.style.display=p===panel?'block':'none';
+  });
+  if(panel==='pincodes') renderAdminPincodes();
+  if(panel==='food'){ renderAdminFood(); renderCatList(); populateCatSelect(); }
+}
+
+// ===== FOOD MANAGER =====
+let categories = [
+  {id:'chai',   name:'Chai',        emoji:'🍵'},
+  {id:'snacks', name:'Snacks',      emoji:'🍟'},
+  {id:'maggi',  name:'Maggi',       emoji:'🍜'},
+  {id:'cold',   name:'Cold Drinks', emoji:'🥤'},
+  {id:'sweet',  name:'Mithai',      emoji:'🍮'},
+];
+
+function renderCatList(){
+  document.getElementById('catList').innerHTML = categories.map((c,i)=>`
+    <div class="cat-chip">
+      ${c.emoji} ${c.name}
+      <span class="del-cat" onclick="deleteCat(${i})" title="Delete">✕</span>
+    </div>`).join('');
+}
+
+function addCategory(){
+  const name = document.getElementById('newCatName').value.trim();
+  const emoji = document.getElementById('newCatEmoji').value.trim() || '🍴';
+  if(!name){ showToast('❌ Category naam likhna zaruri hai'); return; }
+  const id = name.toLowerCase().replace(/\s+/g,'-');
+  if(categories.find(c=>c.id===id)){ showToast('❌ Ye category pehle se hai!'); return; }
+  categories.push({id, name, emoji});
+  document.getElementById('newCatName').value='';
+  document.getElementById('newCatEmoji').value='';
+  renderCatList(); populateCatSelect(); refreshCategoryButtons();
+  showToast(`✅ Category "${name}" add ho gayi!`);
+}
+
+function deleteCat(i){
+  const cat = categories[i];
+  const inUse = menuItems.some(m=>m.cat===cat.id);
+  if(inUse){ showToast(`❌ "${cat.name}" category use mein hai — pehle items hatao`); return; }
+  categories.splice(i,1);
+  renderCatList(); populateCatSelect(); refreshCategoryButtons();
+  showToast(`🗑️ Category "${cat.name}" delete ho gayi`);
+}
+
+function populateCatSelect(){
+  const sel = document.getElementById('newItemCat');
+  if(!sel) return;
+  sel.innerHTML = categories.map(c=>`<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+}
+
+function refreshCategoryButtons(){
+  const div = document.querySelector('.categories');
+  if(!div) return;
+  div.innerHTML = `<button class="cat-btn active" onclick="filterCat(this,'all')">☕ Sab Kuch</button>` +
+    categories.map(c=>`<button class="cat-btn" onclick="filterCat(this,'${c.id}')">${c.emoji} ${c.name}</button>`).join('');
+}
+
+function renderAdminFood(){
+  document.getElementById('itemCount').textContent = menuItems.length;
+  const bgColors = ['#fef3c7','#fde68a','#fed7aa','#d1fae5','#e0e7ff','#fce7f3','#fef9c3','#ffedd5'];
+  document.getElementById('adminMenuList').innerHTML = menuItems.map((item,i)=>`
+    <div class="menu-item-row" id="mrow-${item.id}">
+      <div class="item-emoji">${item.emoji||'🍴'}</div>
+      <div class="item-info">
+        <div class="item-name">${item.name} ${item.best?'🔥':''}</div>
+        <div class="item-meta">${categories.find(c=>c.id===item.cat)?.emoji||''} ${item.cat} • ${item.available===false?'<span style="color:#dc2626">Unavailable</span>':'<span style="color:#16a34a">Available</span>'}</div>
+      </div>
+      <input class="item-price-input" type="number" value="${item.price}" onchange="updatePrice(${item.id},this.value)" title="Price change karo"/>
+      <button class="item-avail-btn ${item.available===false?'off':'on'}" onclick="toggleAvail(${item.id})">${item.available===false?'❌ Off':'✅ On'}</button>
+      <button class="item-del-btn" onclick="deleteMenuItem(${item.id})" title="Delete">🗑️</button>
+    </div>`).join('');
+}
+
+function addMenuItem(){
+  const name  = document.getElementById('newItemName').value.trim();
+  const price = parseInt(document.getElementById('newItemPrice').value)||0;
+  const desc  = document.getElementById('newItemDesc').value.trim() || 'Swadisht aur fresh';
+  const emoji = document.getElementById('newItemEmoji').value.trim() || '🍴';
+  const cat   = document.getElementById('newItemCat').value;
+  const best  = document.getElementById('newItemBest').checked;
+  const bgColors=['#fef3c7','#fde68a','#fed7aa','#d1fae5','#e0e7ff','#fce7f3','#fef9c3','#ffedd5'];
+  if(!name||!price){ showToast('❌ Naam aur price dono bharo'); return; }
+  const newItem = {id:nextId++, name, price, desc, emoji, cat, best, available:true, bg:bgColors[Math.floor(Math.random()*bgColors.length)], stars:4.5, reviews:0};
+  menuItems.push(newItem);
+  document.getElementById('newItemName').value='';
+  document.getElementById('newItemPrice').value='';
+  document.getElementById('newItemDesc').value='';
+  document.getElementById('newItemEmoji').value='';
+  document.getElementById('newItemBest').checked=false;
+  renderAdminFood();
+  renderMenu(activecat==='all'?menuItems.filter(m=>m.available!==false):menuItems.filter(m=>m.cat===activecat&&m.available!==false));
+  showToast(`✅ "${name}" menu mein add ho gaya!`);
+}
+
+function updatePrice(id, val){
+  const item = menuItems.find(m=>m.id===id);
+  if(!item) return;
+  item.price = parseInt(val)||0;
+  renderMenu(activecat==='all'?menuItems.filter(m=>m.available!==false):menuItems.filter(m=>m.cat===activecat&&m.available!==false));
+  showToast(`💰 ${item.name} ki price ₹${item.price} ho gayi`);
+}
+
+function toggleAvail(id){
+  const item = menuItems.find(m=>m.id===id);
+  if(!item) return;
+  item.available = item.available===false ? true : false;
+  renderAdminFood();
+  renderMenu(activecat==='all'?menuItems.filter(m=>m.available!==false):menuItems.filter(m=>m.cat===activecat&&m.available!==false));
+  showToast(`${item.available?'✅':'❌'} ${item.name} — ${item.available?'Available':'Unavailable'} kar diya`);
+}
+
+function deleteMenuItem(id){
+  const idx = menuItems.findIndex(m=>m.id===id);
+  if(idx===-1) return;
+  const name = menuItems[idx].name;
+  menuItems.splice(idx,1);
+  renderAdminFood();
+  renderMenu(activecat==='all'?menuItems.filter(m=>m.available!==false):menuItems.filter(m=>m.cat===activecat&&m.available!==false));
+  showToast(`🗑️ "${name}" delete ho gaya`);
+}
+
+// ===== WHATSAPP =====
+function whatsappOrder(e){
+  e.preventDefault();
+  const items=Object.values(cart);
+  if(!items.length){showToast('❌ Pehle cart mein kuch add karo!');return;}
+  const msg=items.map(i=>`${i.emoji} ${i.name} x${i.qty} = ₹${i.price*i.qty}`).join('\n');
+  const total=items.reduce((s,i)=>s+i.price*i.qty,0);
+  const text=`🍵 *Chai Sutta Bar Order*\n\n${msg}\n\n💰 *Total: ₹${total}*\n\nPlease confirm my order!`;
+  window.open('https://wa.me/919999999999?text='+encodeURIComponent(text));
+}
+
+// ===== DARK MODE =====
+function toggleDark(){
+  const html=document.documentElement;
+  const dark=html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('darkBtn').textContent=dark?'🌙 Dark':'☀️ Light';
+}
+
+// ===== MODAL HELPERS =====
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function switchTab(btn,formId){
+  document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('loginForm').style.display=formId==='loginForm'?'block':'none';
+  document.getElementById('signupForm').style.display=formId==='signupForm'?'block':'none';
+}
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});
+});
+
+// ===== TOAST =====
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ===== INIT =====
+let menuItems = [...menu];
+let nextId = menuItems.length + 1;
+document.addEventListener('DOMContentLoaded', function(){
+  renderMenu(menuItems);
+  renderReviews();
+  populateCatSelect();
+});</script>
+</body>
+</html>
