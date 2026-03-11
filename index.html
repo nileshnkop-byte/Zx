@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexusAI — Smart Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080c14; --surface: #0e1520; --surface2: #131d2e;
+    --border: rgba(99,179,255,0.12); --accent: #3b8aff; --accent2: #00e5c8;
+    --accent3: #ff5e87; --text: #e8f0ff; --text2: #7e9ab8;
+  }
+  html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; }
+  .glow-orb { position: fixed; border-radius: 50%; filter: blur(90px); opacity: 0.13; pointer-events: none; z-index: 0; }
+  .glow-orb.a { width: 500px; height: 500px; background: var(--accent); top: -150px; left: -100px; animation: drift1 18s ease-in-out infinite; }
+  .glow-orb.b { width: 380px; height: 380px; background: var(--accent2); bottom: -80px; right: -60px; animation: drift2 22s ease-in-out infinite; }
+  .glow-orb.c { width: 280px; height: 280px; background: var(--accent3); top: 40%; left: 40%; animation: drift3 14s ease-in-out infinite; }
+  @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(40px,30px)} }
+  @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-30px,-20px)} }
+  @keyframes drift3 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(-20px,25px)} 66%{transform:translate(20px,-15px)} }
+
+  .app { position: relative; z-index: 1; display: flex; height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar { width: 260px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+  .sidebar-header { padding: 24px 20px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 0 20px rgba(59,138,255,0.4); }
+  .logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .new-chat-btn { margin: 16px 14px; background: linear-gradient(135deg, rgba(59,138,255,0.15), rgba(0,229,200,0.08)); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500; padding: 10px 16px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+  .new-chat-btn:hover { background: rgba(59,138,255,0.22); border-color: rgba(59,138,255,0.4); transform: translateY(-1px); }
+  .sidebar-label { padding: 12px 18px 6px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.12em; color: var(--text2); text-transform: uppercase; }
+  .history-list { flex: 1; overflow-y: auto; padding: 0 10px; }
+  .history-item { padding: 9px 10px; border-radius: 9px; cursor: pointer; font-size: 13px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.15s; margin-bottom: 2px; display: flex; align-items: center; gap: 8px; }
+  .history-item:hover { background: rgba(99,179,255,0.07); color: var(--text); }
+  .history-item.active { background: rgba(59,138,255,0.14); color: var(--text); border: 1px solid rgba(59,138,255,0.18); }
+  .sidebar-footer { padding: 14px; border-top: 1px solid var(--border); }
+  .user-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent3), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; }
+  .user-name { font-size: 13px; font-weight: 500; }
+  .user-plan { font-size: 11px; color: var(--accent2); }
+
+  /* MAIN */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); backdrop-filter: blur(10px); background: rgba(8,12,20,0.6); }
+  .model-badge { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); padding: 7px 14px; border-radius: 10px; font-size: 13.5px; font-weight: 500; }
+  .model-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); box-shadow: 0 0 6px var(--accent2); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .chat-area { flex: 1; overflow-y: auto; padding: 32px 0; scroll-behavior: smooth; }
+  .chat-area::-webkit-scrollbar { width: 4px; }
+  .chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* WELCOME */
+  .welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 40px 20px; text-align: center; animation: fadeUp 0.6s ease both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .welcome-icon { width: 72px; height: 72px; border-radius: 22px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 24px; box-shadow: 0 0 40px rgba(59,138,255,0.35); animation: float 4s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .welcome h1 { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; margin-bottom: 10px; background: linear-gradient(135deg, var(--text) 0%, var(--accent) 50%, var(--accent2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .welcome p { color: var(--text2); font-size: 15px; max-width: 420px; line-height: 1.7; margin-bottom: 36px; }
+  .suggestion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 520px; width: 100%; }
+  .suggestion-card { background: var(--surface); border: 1px solid var(--border); padding: 14px 16px; border-radius: 13px; cursor: pointer; text-align: left; transition: all 0.2s; }
+  .suggestion-card:hover { background: var(--surface2); border-color: rgba(59,138,255,0.35); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+  .suggestion-card .s-icon { font-size: 18px; margin-bottom: 6px; }
+  .suggestion-card .s-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .suggestion-card .s-sub { font-size: 12px; color: var(--text2); }
+
+  /* MESSAGES */
+  .messages { max-width: 760px; margin: 0 auto; padding: 0 24px; display: flex; flex-direction: column; gap: 28px; }
+  .msg { display: flex; gap: 14px; animation: fadeUp 0.35s ease both; }
+  .msg.user { flex-direction: row-reverse; }
+  .msg-avatar { width: 36px; height: 36px; border-radius: 11px; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
+  .msg.ai .msg-avatar { background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow: 0 0 16px rgba(59,138,255,0.3); }
+  .msg.user .msg-avatar { background: linear-gradient(135deg, var(--accent3), #ff8c6b); }
+  .msg-content { flex: 1; }
+  .msg-name { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; margin-bottom: 6px; color: var(--text2); }
+  .msg.user .msg-name { text-align: right; }
+  .msg-bubble { padding: 14px 18px; border-radius: 16px; font-size: 14.5px; line-height: 1.75; max-width: 640px; }
+  .msg.ai .msg-bubble { background: var(--surface); border: 1px solid var(--border); border-top-left-radius: 4px; }
+  .msg.user .msg-bubble { background: linear-gradient(135deg, rgba(59,138,255,0.22), rgba(0,229,200,0.1)); border: 1px solid rgba(59,138,255,0.25); border-top-right-radius: 4px; margin-left: auto; }
+  .msg-actions { display: flex; gap: 6px; margin-top: 8px; opacity: 0; transition: opacity 0.2s; }
+  .msg:hover .msg-actions { opacity: 1; }
+  .msg-action-btn { padding: 4px 10px; border-radius: 7px; background: var(--surface); border: 1px solid var(--border); color: var(--text2); font-size: 11.5px; cursor: pointer; transition: all 0.15s; font-family: inherit; display: flex; align-items: center; gap: 4px; }
+  .msg-action-btn:hover { background: var(--surface2); color: var(--text); }
+
+  /* TYPING */
+  .typing-indicator { display: flex; gap: 5px; padding: 16px 18px; align-items: center; }
+  .typing-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); opacity: 0.4; animation: typingPulse 1.2s ease-in-out infinite; }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; background: var(--accent2); }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; background: var(--accent3); }
+  @keyframes typingPulse { 0%,60%,100%{transform:scale(1);opacity:0.4} 30%{transform:scale(1.3);opacity:1} }
+
+  /* INPUT */
+  .input-area { padding: 16px 24px 20px; background: linear-gradient(to top, var(--bg) 60%, transparent); }
+  .input-wrapper { max-width: 760px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; }
+  .input-wrapper:focus-within { border-color: rgba(59,138,255,0.45); box-shadow: 0 0 0 3px rgba(59,138,255,0.08); }
+  .textarea-row { display: flex; align-items: flex-end; padding: 14px; gap: 10px; }
+  #userInput { flex: 1; background: transparent; border: none; outline: none; resize: none; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14.5px; line-height: 1.6; min-height: 24px; max-height: 200px; overflow-y: auto; }
+  #userInput::placeholder { color: var(--text2); opacity: 0.7; }
+  .send-btn { width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), var(--accent2)); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 0 16px rgba(59,138,255,0.3); }
+  .send-btn:hover { transform: scale(1.05); }
+  .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .input-footer { padding: 0 14px 10px; font-size: 11.5px; color: var(--text2); }
+
+  @media (max-width: 720px) {
+    .sidebar { display: none; }
+    .suggestion-grid { grid-template-columns: 1fr; }
+    .welcome h1 { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="glow-orb a"></div>
+<div class="glow-orb b"></div>
+<div class="glow-orb c"></div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">✦</div>
+      <span class="logo-text">NexusAI</span>
+    </div>
+    <button class="new-chat-btn" onclick="newChat()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Naya Chat
+    </button>
+    <div class="sidebar-label">History</div>
+    <div class="history-list" id="historyList"></div>
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="avatar">U</div>
+        <div>
+          <div class="user-name">Aap</div>
+          <div class="user-plan">✦ Free Plan</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="model-badge">
+        <div class="model-dot"></div>
+        <span>NexusAI Smart Mode</span>
+      </div>
+      <span style="font-size:12px;color:var(--text2)">🟢 Online</span>
+    </div>
+
+    <div class="chat-area" id="chatArea">
+      <div class="welcome" id="welcomeScreen">
+        <div class="welcome-icon">✦</div>
+        <h1>NexusAI ko Salaam!</h1>
+        <p>Aapka smart AI assistant — Urdu, Hindi aur English mein baat karo!</p>
+        <div class="suggestion-grid">
+          <div class="suggestion-card" onclick="sendSuggestion('AI kya hota hai? Simple mein samjhao')">
+            <div class="s-icon">🧠</div>
+            <div class="s-title">AI Kya Hai?</div>
+            <div class="s-sub">Asaan alfazon mein</div>
+          </div>
+          <div class="suggestion-card" onclick="sendSuggestion('Python mein Hello World kaise likhein?')">
+            <div class="s-icon">💻</div>
+            <div class="s-title">Coding Seekho</div>
+            <div class="s-sub">Python ka pehla program</div>
+          </div>
+          <div class="suggestion-card" onclick="sendSuggestion('Meri startup ke liye 5 business ideas do')">
+            <div class="s-icon">🚀</div>
+            <div class="s-title">Business Ideas</div>
+            <div class="s-sub">Startup ke liye tips</div>
+          </div>
+          <div class="suggestion-card" onclick="sendSuggestion('Sehatmand rehne ke liye kya karna chahiye?')">
+            <div class="s-icon">💪</div>
+            <div class="s-title">Health Tips</div>
+            <div class="s-sub">Sehatmand zindagi</div>
+          </div>
+        </div>
+      </div>
+      <div class="messages" id="messagesContainer" style="display:none;"></div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-wrapper">
+        <div class="textarea-row">
+          <textarea id="userInput" placeholder="Yahan likhein aur Enter dabayein... ✍️" rows="1"
+            onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+            <svg width="16" height="16" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+        <div class="input-footer">Enter = Send &nbsp;·&nbsp; Shift+Enter = New Line</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+let isTyping = false;
+let chatHistory = [];
+let allChats = [];
+
+// ── SMART AI RESPONSES ──
+const responses = {
+  greeting: ["Salam! Main NexusAI hoon 🤖 Aap se milke khushi hui! Aaj kya jaanna chahte hain?", "Assalamualaikum! Kaise hain aap? Main aapki madad ke liye haazir hoon ✦", "Hello! NexusAI yahan hai. Koi bhi sawaal poochho, main jawab dunga! 😊"],
+  howAreYou: ["Main bilkul theek hoon, shukriya poochne ka! 😊 Aap batayein, kaise hain?", "Mujhe toh hamesha acha lagta hai — AI hoon na! 🤖 Aap ka kya haal hai?"],
+  thanks: ["Khushi hui madad kar ke! 😊 Aur kuch poochna ho toh zaroor batayein.", "Aapka shukriya! Main hamesha madad ke liye tayyar hoon ✦", "Koi baat nahi! Yeh mera kaam hai 🙏"],
+  bye: ["Allah Hafiz! Dobara aana, hamesha swagat hai 🌟", "Khuda Hafiz! Aap ka din acha guzre 😊", "Bye bye! Jab bhi zaroorat ho, main yahan hoon ✦"],
+  
+  ai: `**Artificial Intelligence (AI) kya hai?** 🧠
+
+AI matlab Computer ko itna smart banana ke woh insaan ki tarah soch sake.
+
+**Main features:**
+• 🎯 **Learning** — Data se seekhna
+• 🗣️ **Language** — Baat karna aur samajhna  
+• 👁️ **Vision** — Tasvirein dekhna aur samajhna
+• 🔮 **Prediction** — Aage ki baat andaza karna
+
+**Examples:**
+• ChatGPT, NexusAI — Baat karne wale AI
+• Google Translate — Zaban badalne wala
+• Face ID — Chehra pehchanne wala
+• Netflix recommendations — Pasandida cheez dhundne wala
+
+AI aaj kal har jagah hai — phones, cars, hospitals sab mein! 🚀`,
+
+  python: `**Python — Duniya ki sabse aasaan programming language** 💻
+
+**Hello World likhnay ka tarika:**
+
+\`\`\`python
+print("Hello World!")
+print("Namaste Duniya!")
+print("Salam Pakistan! 🇵🇰")
+\`\`\`
+
+**Python seekhne ki jagahein:**
+• 🌐 w3schools.com/python
+• 📺 YouTube par "Python Urdu tutorial"
+• 📱 SoloLearn app (free)
+
+**Aasan baatein:**
+• Variables: \`name = "Ali"\`
+• Calculator: \`print(5 + 3)\`
+• List: \`fruits = ["apple", "mango"]\`
+
+Koi specific cheez sikhni hai? Batao! 😊`,
+
+  business: `**Top 5 Business Ideas 2024** 🚀
+
+**1. 📱 Social Media Management**
+Doosron ke Instagram/Facebook chalao — Rs. 20,000-50,000/maheena
+
+**2. 🛒 Online Store (Daraz/Shopify)**
+Ghar baith ke products becho — kam investment, zyada munafa
+
+**3. 🎨 Freelancing (Fiverr/Upwork)**
+Design, writing, coding — dollar mein kamayi
+
+**4. 📚 Online Tuition**
+Zoom par parhaao — koi bhi subject
+
+**5. 🍱 Home Food Business**
+Ghar ka khana bech ke start karo — zero investment
+
+**Kaunsa idea pasand aaya?** Main aur detail bata sakta hoon! 💡`,
+
+  health: `**Sehatmand Zindagi ke 7 Golden Rules** 💪
+
+**1. 💧 Paani Zyada Piyo**
+Roz 8 gilaas — skin, digestion sab improve hoga
+
+**2. 🌙 Neend Poori Karo**
+7-8 ghante — dimagh fresh rahega
+
+**3. 🚶 Rozana Chalo**
+30 minute walk — heart strong rahega
+
+**4. 🥗 Healthy Khao**
+Fruits, vegetables, dahi — junk food kam karo
+
+**5. 📵 Screen Time Kam Karo**
+Sone se 1 ghante pehle phone band karo
+
+**6. 🧘 Stress Kam Karo**
+Deep breathing, namaz, meditation
+
+**7. 😊 Khush Raho**
+Positive sochna — sabse bada health secret!
+
+Koi specific health sawaal hai? 🙏`,
+
+  coding: `**Coding Kaise Seekhein — Complete Guide** 💻
+
+**Step 1: Language Chunein**
+• Python — Beginners ke liye best ✅
+• HTML/CSS — Website banana
+• JavaScript — Interactive websites
+
+**Step 2: Free Resources**
+• 🌐 **freeCodeCamp.org** — Bilkul free
+• 📺 **YouTube** — Urdu mein bhi tutorials hain
+• 📱 **Grasshopper App** — Mobile par seekho
+
+**Step 3: Practice Karo**
+Roz 30-60 minute coding karo
+
+**Step 4: Project Banao**
+Calculator, to-do list, simple games
+
+**Pehla Code:**
+\`\`\`python
+name = input("Aapka naam? ")
+print("Hello " + name + "! 👋")
+\`\`\`
+
+Kaunsi language seekhni hai? Main guide kar sakta hoon! 🚀`,
+
+  default: [
+    `Aapka sawaal sun liya! 😊 Yeh topic bohot interesting hai. Main iske baare mein kuch important baatein share karta hoon:\n\n**Main Points:**\n• Yeh aaj ke daur mein bahut relevant hai\n• Iske baare mein seekhna faydemand hai\n• Aap Google aur YouTube par aur detail mil sakti hai\n\nKoi specific cheez aur poochni hai? Main madad ke liye tayyar hoon! ✦`,
+    `Bohot acha sawaal hai! 🌟 Is topic par meri understanding yeh hai:\n\n**Key Information:**\n• Yeh ek important subject hai\n• Isko samajhne ke liye basic knowledge zaroori hai\n• Aage badhne ke liye practice karte rahein\n\nAur detail chahiye? Bilkul puchho! 😊`,
+    `Shukriya is sawaal ke liye! ✦ Main apni best knowledge share karta hoon:\n\n**Summary:**\n• Yeh topic aaj kal bahut popular hai\n• Isko seekhna mushkil nahi agar sahi tarike se sikhein\n• Ek ek step karo aur practice karte raho\n\nKuch aur help chahiye? Main yahan hoon! 🤖`
+  ]
+};
+
+function getAIResponse(msg) {
+  const m = msg.toLowerCase();
+  if (/salam|hello|hi |hey|assalam|namaste/.test(m)) return pick(responses.greeting);
+  if (/kaise ho|how are|theek ho|kaisa|kya haal/.test(m)) return pick(responses.howAreYou);
+  if (/shukriya|thanks|thank|شکریہ/.test(m)) return pick(responses.thanks);
+  if (/bye|khuda hafiz|allah hafiz|alvida/.test(m)) return pick(responses.bye);
+  if (/ai kya|artificial intelligence|ai matlab|machine learning/.test(m)) return responses.ai;
+  if (/python|coding|code|program|javascript|html/.test(m)) return responses.python;
+  if (/business|startup|idea|paise|kamayi|earning/.test(m)) return responses.business;
+  if (/health|sehat|fitness|exercise|diet|khana|neend/.test(m)) return responses.health;
+  if (/coding seekh|kaise seekh|programming seekh/.test(m)) return responses.coding;
+  return pick(responses.default);
+}
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+function autoResize(ta) { ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 200) + 'px'; }
+function sendSuggestion(t) { document.getElementById('userInput').value = t; sendMessage(); }
+
+function sen
